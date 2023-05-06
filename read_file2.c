@@ -164,6 +164,34 @@ void generateGraph(char** words, int numWords){
 
 }
 
+void print_array(char*** arr, int arr_size) {
+    if (arr_size == 0) {
+        printf("{}");
+        return;
+    }
+
+    printf("{\n");
+    for (int i = 0; i < arr_size; i++) {
+        printf("\t{");
+        if (arr[i] != NULL) {
+            int j = 0;
+            while (arr[i][j] != NULL) {
+                printf("%s", arr[i][j]);
+                if (arr[i][j+1] != NULL) {
+                    printf(", ");
+                }
+                j++;
+            }
+        }
+        printf("}");
+        if (i < arr_size-1) {
+            printf(",");
+        }
+        printf("\n");
+    }
+    printf("}");
+}
+
 int main()
 {
     char** words;
@@ -200,19 +228,8 @@ int main()
  int output_nodes_size = 0;
     char*** outputNodes = parse_input((const char**)words, numWords, (const char**)output, size, &output_nodes_size);
 
- // Print the output
-    for (int i = 0; i < output_nodes_size; i++) {
-        printf("{");
-        for (int j = 0; outputNodes[i][j] != NULL; j++) {
-         
-            printf("\"%s\"", outputNodes[i][j]);
-            if (outputNodes[i][j+1] != NULL) {
-                printf(",");
-            }
-  
-        }
-        printf("}\n");
-    }
+
+print_array( outputNodes, 5);
 
 
 
