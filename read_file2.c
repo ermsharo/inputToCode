@@ -6,61 +6,8 @@
 #define MAX_WORD_LENGTH 120
 #define MAX_ARRAY_LEN 1000
 
-int *find_indices(char **arr1, int arr1_size, char **arr2, int arr2_size)
-{
-    int *indices = malloc(arr2_size * sizeof(int));
-    if (indices == NULL)
-    {
-        printf("Error: failed to allocate memory\n");
-        exit(1);
-    }
 
-    int index = 0;
-    for (int i = 0; i < arr1_size && index < arr2_size; i++)
-    {
-        if (strcmp(arr1[i], arr2[index]) == 0)
-        {
-            indices[index] = i;
-            index++;
-        }
-    }
 
-    return indices;
-}
-
-char ***parse_input(const char **input, int input_size, const char **prefixes, int prefixes_size, int *output_size)
-{
-    char ***output = malloc(prefixes_size * sizeof(char **));
-    int output_index = 0;
-
-    for (int i = 0; i < prefixes_size; i++)
-    {
-        output[output_index] = malloc(input_size * sizeof(char *));
-        int output_subindex = 0;
-
-        for (int j = 0; j < input_size; j++)
-        {
-            if (strncmp(input[j], prefixes[i], strlen(prefixes[i])) == 0)
-            {
-                output[output_index][output_subindex] = (char *)input[j];
-                output_subindex++;
-            }
-        }
-
-        if (output_subindex > 0)
-        {
-            output[output_index][output_subindex] = NULL;
-            output_index++;
-        }
-        else
-        {
-            free(output[output_index]);
-        }
-    }
-
-    *output_size = output_index;
-    return output;
-}
 
 char **getWordsEndingWith(char **array, char endChar, int size)
 {
@@ -83,59 +30,6 @@ char **getWordsEndingWith(char **array, char endChar, int size)
     return result;
 }
 
-char **getAdjList(char **arr, int len, int *outLen)
-{
-    // Allocate memory for the output array
-    char **outArr = (char **)malloc(MAX_ARRAY_LEN * sizeof(char *));
-    if (!outArr)
-    {
-        printf("Error: Failed to allocate memory for output array.\n");
-        return NULL;
-    }
-
-    // Create a hash table to keep track of which strings have been seen
-    int *seenTable = (int *)calloc(len, sizeof(int));
-    if (!seenTable)
-    {
-        printf("Error: Failed to allocate memory for seen table.\n");
-        free(outArr);
-        return NULL;
-    }
-
-    int outIdx = 0;
-    for (int i = 0; i < len; i++)
-    {
-        char *str = arr[i];
-
-        // Check if the string has been seen before
-        int seen = 0;
-        for (int j = 0; j < i; j++)
-        {
-            if (seenTable[j] && strcmp(str, arr[j]) == 0)
-            {
-                seen = 1;
-                break;
-            }
-        }
-
-        // If the string has not been seen, add it to the output array
-        if (!seen)
-        {
-            outArr[outIdx] = str;
-            outIdx++;
-            seenTable[i] = 1;
-        }
-    }
-
-    // Update the output length
-    *outLen = outIdx;
-
-    // Free the seen table memory
-    free(seenTable);
-
-    // Return the output array
-    return outArr;
-}
 
 char **readWordsFromFile(const char *fileName, int *numWords)
 {
@@ -182,37 +76,7 @@ void generateGraph(char **words, int numWords)
 {
 }
 
-void print_output(char ***output, int output_size)
-{
-    for (int i = 0; i < output_size; i++)
-    {
-        int j = 0;
-        while (output[i][j] != NULL)
-        {
-            printf("%s, ", output[i][j]);
-            j++;
-        }
-        printf("\n");
-    }
-}
 
-void print_array(char ***arr, int arr_size)
-{
-    for (int i = 0; i < arr_size; i++)
-    {
-        printf("{");
-        char **sub_arr = arr[i];
-        for (int j = 0; sub_arr[j] != NULL; j++)
-        {
-            printf("\"%s\"", sub_arr[j]);
-            if (sub_arr[j + 1] != NULL)
-            {
-                printf(", ");
-            }
-        }
-        printf("}\n");
-    }
-}
 
 int *find_indexes(char **arr1, int arr1_size, char **arr2, int arr2_size)
 {
@@ -278,6 +142,14 @@ char** remove_first_last(char** arr, int size) {
     return new_arr;
 }
 
+void remove_last_char(char* str)
+{
+    int len = strlen(str);
+    if (len > 0) {
+        str[len - 1] = '\0';
+    }
+}
+
 
 int main()
 {
@@ -299,7 +171,6 @@ int main()
     }
 
     char **words = remove_first_last(originalWords,originalNumWords);
-    
     int numWords = originalNumWords-2;
 
 
@@ -308,7 +179,6 @@ int main()
     {
         printf("%s , ", words[i]);
     }
-
 
 
     printf("\n  -> size of main array is %i ", numWords);
@@ -321,20 +191,11 @@ int main()
         printf("%s ", output[i]);
     }
 
-    int *indices = find_indices(words, numWords, output, size - 1);
-    printf("\n");
-
-    printf("Indices: [ ");
-    for (int i = 0; i < size; i++)
-    {
-        printf("%d ,", indices[i]);
-    }
-    printf("]");
 
     int *idx = find_indexes(words, numWords, output, size - 1);
 
     char ***result = split_array(words, numWords, idx, size - 1);
-    printf("\n \n \n SEPARATED NODES");
+    printf("\n \n \nSEPARATED NODES:\n");
     for (int i = 0; i < size - 1; i++) {
         printf("{");
         for (int j = 0; result[i][j] != NULL; j++) {
