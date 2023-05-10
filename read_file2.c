@@ -31,6 +31,34 @@ char **getWordsEndingWith(char **array, char endChar, int size)
 }
 
 
+char **change_strings(char **array, char *target, char *replacement) {
+    int size = 0;
+    while (array[size] != NULL) {
+        size++;
+    }
+
+    char **new_array = malloc((size+1) * sizeof(char*));
+    int i;
+
+    for (i = 0; i < size; i++) {
+        char *pos = strstr(array[i], target);
+        if (pos != NULL) {
+            // char *new_str = malloc((strlen(array[i]) - strlen(target) + strlen(replacement) + 1) * sizeof(char));
+            // strncpy(new_str, array[i], pos - array[i]);
+            // new_str[pos - array[i]] = '\0';
+            // strcat(new_str, replacement);
+            // strcat(new_str, pos + strlen(target));
+            new_array[i] = replacement;
+        }
+        else {
+            new_array[i] = array[i];
+        }
+    }
+
+    new_array[size] = NULL;
+    return new_array;
+}
+
 char **readWordsFromFile(const char *fileName, int *numWords)
 {
     FILE *fp = fopen(fileName, "r");
@@ -151,6 +179,55 @@ void remove_last_char(char* str)
 }
 
 
+void printStringArray(char **strArray) {
+    int size = 0;
+    while (strArray[size] != NULL) {
+        size++;
+    }
+          printf("\n [ ");
+    for (int i = 0; i < size; i++) {
+        printf("( %s )->", strArray[i]);
+    }
+             printf(" ]");
+}
+
+
+char** splitArrayByValue(char** originalArray, char* splitValue, int* numArrays) {
+    // Calculate the length of the input array
+    int length = 0;
+    while (originalArray[length] != NULL) {
+        length++;
+    }
+
+    // Allocate memory for the output array of arrays
+    char** outputArrays = (char**) malloc(sizeof(char*) * length);
+    *numArrays = 0;
+
+    // Iterate over the input array and split it into sub-arrays
+    int subArrayStartIndex = 0;
+    for (int i = 0; i < length; i++) {
+        if (strcmp(originalArray[i], splitValue) == 0) {
+            int subArrayLength = i - subArrayStartIndex;
+            outputArrays[*numArrays] = (char*) malloc(sizeof(char*) * (subArrayLength + 1));
+            memcpy(outputArrays[*numArrays], originalArray + subArrayStartIndex, subArrayLength * sizeof(char*));
+            outputArrays[*numArrays][subArrayLength] = NULL;
+            (*numArrays)++;
+            subArrayStartIndex = i + 1;
+        }
+    }
+
+    // Add the final sub-array to the output array of arrays
+    int subArrayLength = length - subArrayStartIndex;
+    outputArrays[*numArrays] = (char*) malloc(sizeof(char*) * (subArrayLength + 1));
+    memcpy(outputArrays[*numArrays], originalArray + subArrayStartIndex, subArrayLength * sizeof(char*));
+    outputArrays[*numArrays][subArrayLength] = NULL;
+    (*numArrays)++;
+
+    // Resize the output array of arrays to remove any empty sub-arrays
+    outputArrays = (char**) realloc(outputArrays, sizeof(char*) * (*numArrays));
+    return outputArrays;
+}
+
 int main()
 {
     char **originalWords;
@@ -174,12 +251,31 @@ int main()
     int numWords = originalNumWords-2;
 
 
-     printf(" \n \n The words in the graph:\n");
-    for (int i = 0; i < numWords; i++)
-    {
-        printf("%s , ", words[i]);
-    }
+     printf(" \n \n The words in the file:\n");
+     printStringArray(words);
 
+     char **new_array = change_strings(words, ":", "vertex");
+     printf(" \n \n The words in the file changing:\n");
+     printStringArray(new_array);
+
+
+     int outputLengths[sizeof(new_array) / sizeof(new_array[0])];
+
+     
+    int numArrays;
+    char*** splitArrays = splitArrayByValue(new_array, "vertex", &numArrays);
+
+ // Print the resulting arrays
+    for (int i = 0; i < numArrays; i++) {
+        printf("Array %d: [", i);
+        for (int j = 0; splitArrays[i][j] != NULL; j++) {
+            printf("%s", splitArrays[i][j]);
+            if (splitArrays[i][j + 1] != NULL) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
 
     printf("\n  -> size of main array is %i ", numWords);
     char **output = getWordsEndingWith(words, ':', numWords);

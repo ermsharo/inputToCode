@@ -1,2 +1,2 @@
-gcc -g -o read_file2 read_file2.c
-./read_file2
+gcc -g -o read_file3 read_file3.c
+./read_file3
