@@ -54,23 +54,6 @@ void free_list(struct listNode *head)
     }
 }
 
-void print_string_array(char **arr)
-{
-    int size = 0;
-
-    // Loop through the array until a NULL pointer is encountered
-    while (arr[size] != NULL)
-    {
-        size++;
-    }
-
-    // Loop through the array again and print each string
-    for (int i = 0; i < size; i++)
-    {
-        printf("%s ,", arr[i]);
-    }
-}
-
 char **readWordsFromFile(const char *fileName, int *numWords)
 {
     FILE *fp = fopen(fileName, "r");
@@ -122,17 +105,14 @@ char **getWordsEndingWith(char **array, char endChar, int size)
         int len = strlen(array[i]); // Get the length of the current string
 
         if (array[i][len - 1] == endChar)
-        {                             // Check if the last character of the string matches the specified character
-            result[count] = array[i]; // Allocate memory for the string in the result array
-            // strcpy(result[count], array[i]);
-            //    printf(" \n adj ->  %s ",array[i]);                      // Copy the string from the input array to the result array
-            count++; // Increment the counter
+        {                                                             // Check if the last character of the string matches the specified character
+            result[count] = (char *)malloc((len + 1) * sizeof(char)); // Allocate memory for the string in the result array
+            strcpy(result[count], array[i]);                          // Copy the string from the input array to the result array
+            count++;                                                  // Increment the counter
         }
     }
 
     result = (char **)realloc(result, count * sizeof(char *)); // Shrink the result array to fit the exact number of words that end with the specified character
-    printf(" \n \n Aqui esta  \n \n");
-    // print_string_array(result);
     return result;
 }
 
@@ -183,6 +163,8 @@ char **remove_char(char **arr, int arr_size, char c)
     return new_arr;
 }
 
+
+
 char **add_array_label(char **array, char endChar, int size)
 {
     char **result = (char **)malloc(size * sizeof(char *)); // Allocate memory for the result array
@@ -206,98 +188,68 @@ char **add_array_label(char **array, char endChar, int size)
     return result;
 }
 
-void insert_between_equal(char **arr, int len)
-{
+void insert_between_equal(char** arr, int len) {
     int i, j;
-    for (i = 0; i < len - 1; i++)
-    {
-        if (strcmp(arr[i], arr[i + 1]) == 0)
-        {
+    for (i = 0; i < len - 1; i++) {
+        if (strcmp(arr[i], arr[i+1]) == 0) {
             // elements are equal, so insert a new element between them
-            char *new_str = "empty";                           // replace with your desired new element
-            len++;                                             // increase length of array
-            arr = (char **)realloc(arr, len * sizeof(char *)); // resize array
+            char* new_str = "empty";  // replace with your desired new element
+            len++;  // increase length of array
+            arr = (char**)realloc(arr, len * sizeof(char*));  // resize array
             // shift elements to the right to make room for new element
-            for (j = len - 1; j > i + 1; j--)
-            {
-                arr[j] = arr[j - 1];
+            for (j = len - 1; j > i + 1; j--) {
+                arr[j] = arr[j-1];
             }
-            arr[i + 1] = new_str; // insert new element
-            i++;                  // skip over newly inserted element
+            arr[i+1] = new_str;  // insert new element
+            i++;  // skip over newly inserted element
         }
     }
 }
 
-char **insert_new_element(char **arr, int size)
-{
-    char **new_arr = malloc(MAX_SIZE * sizeof(char *));
-    int new_arr_size = 0;
+char** insert_new_element(char** arr, int size) {
+  char** new_arr = malloc(MAX_SIZE * sizeof(char*));
+  int new_arr_size = 0;
 
-    for (int i = 0; i < size; i++)
-    {
-        // Add the current string to the new array
-        new_arr[new_arr_size++] = arr[i];
-        // Check if the next string is the same as the current one
-        if (i < size - 1 && strcmp(arr[i], arr[i + 1]) == 0)
-        {
-            // Add the new element to the new array
-            new_arr[new_arr_size++] = "empty";
-        }
+  for (int i = 0; i < size; i++) {
+    // Add the current string to the new array
+    new_arr[new_arr_size++] = arr[i];
+    // Check if the next string is the same as the current one
+    if (i < size - 1 && strcmp(arr[i], arr[i+1]) == 0) {
+      // Add the new element to the new array
+      new_arr[new_arr_size++] = "empty";
     }
+  }
 
-    // Null-terminate the new array
-    new_arr[new_arr_size] = NULL;
+  // Null-terminate the new array
+  new_arr[new_arr_size] = NULL;
 
-    return new_arr;
+  return new_arr;
 }
 
+void print_string_array(char** arr) {
+  int size = 0;
 
+  // Loop through the array until a NULL pointer is encountered
+  while (arr[size] != NULL) {
+    size++;
+  }
 
-int get_array_size(char **arr)
-{
-    int size = 0;
-
-    // Loop through the array until a NULL pointer is encountered
-    while (arr[size] != NULL)
-    {
-        size++;
-    }
-    return size;
+  // Loop through the array again and print each string
+  for (int i = 0; i < size; i++) {
+    printf("%s ,", arr[i]);
+  }
 }
 
-void add_string_to_array(char ***arr_ptr, char *str)
-{
-    // Calculate the size of the array
-    int size = 0;
-    char **arr = *arr_ptr;
-    while (arr[size] != NULL)
-    {
-        size++;
-    }
+int get_array_size(char** arr){
+     int size = 0;
 
-    // Allocate memory for the new string and copy it in
-    char *new_str = malloc(strlen(str) + 1);
-    strcpy(new_str, str);
-
-    // Reallocate memory for the array and add the new string
-    *arr_ptr = realloc(arr, (size + 2) * sizeof(char *));
-    (*arr_ptr)[size] = new_str;
-    (*arr_ptr)[size + 1] = NULL;
+  // Loop through the array until a NULL pointer is encountered
+  while (arr[size] != NULL) {
+    size++;
+  }
+  return size;
 }
 
-void add_string_if_last_element_matches(char ***arr_ptr, char *last_element, char *str_to_add)
-{
-    char **arr = *arr_ptr;
-    int size = 0;
-    while (arr[size] != NULL)
-    {
-        size++;
-    }
-    if (size > 0 && strcmp(arr[size - 1], last_element) == 0)
-    {
-        add_string_to_array(arr_ptr, str_to_add);
-    }
-}
 
 int main()
 {
@@ -306,45 +258,64 @@ int main()
 
     originalWords = readWordsFromFile("entrada.txt", &originalNumWords);
 
+    //    printf("The words in the file are:\n");
+    // for (int i = 0; i < originalNumWords; i++)
+    // {
+    //     printf("%s , ", originalWords[i]);
+    // }
+    //    printf(" \n" );
+
     int optionValue = atoi(originalWords[originalNumWords - 1]);
 
     char **words = remove_first_last(originalWords, originalNumWords);
     int numWords = originalNumWords - 2;
 
     printf(" \n \n The words in the graph:\n");
+    for (int i = 0; i < numWords; i++)
+    {
+        printf(" \n %s , ", words[i]);
+    }
 
-    print_string_array(words);
+    printf(" \n    \n");
 
     char **output = getWordsEndingWith(words, ':', numWords);
     int size = sizeof(output);
 
-    int adjSize = get_array_size(output);
-
-    printf(" \n  adj list size %i ", size);
+    printf("words  values \n \n");
+    for (int i = 0; i < numWords; i++)
+    {
+        printf(" ( %s )", words[i]);
+    }
+    printf("\n \n");
 
     char **clean_adj = remove_char(output, size, ':');
 
     char **array_label = add_array_label(words, ':', numWords);
 
-    char **new_arr = insert_new_element(array_label, numWords);
-
-    add_string_if_last_element_matches(&new_arr, "adj", "empty");
-
+    char** new_arr = insert_new_element(array_label, numWords);
     int new_array_size = get_array_size(new_arr);
     // insert_between_equal(array_label, numWords);
-
-    printf("\n labed array :\n");
-    print_string_array(array_label);
 
     printf("\n Array with empty :\n");
     print_string_array(new_arr);
 
-    printf("\n array size : %i \n \n ", new_array_size);
+
+
+    printf("\n labed array :\n");
+    for (int i = 0; i < numWords; i++)
+    {
+        printf(" ( %s ) ,", array_label[i]);
+    }
+    printf("\n");
+
+
+
 
     char **clean_relations = remove_char(new_arr, new_array_size, ';');
+
     printf("\n labed array :\n");
 
-    // print_string_array(clean_relations);
+  print_string_array(new_arr);
     printf("\n");
 
     printf(" \n  \n \n ");
@@ -352,7 +323,7 @@ int main()
     struct listNode *head = NULL;
     struct listNode *sublist_head = NULL;
 
-    for (int i = 0; i < new_array_size; i++)
+    for (int i = 0; i < numWords; i++)
     {
         char *current_str = clean_relations[i];
 
@@ -383,7 +354,7 @@ int main()
     struct listNode *temp = head;
     int sublist_number = 0;
     while (temp != NULL)
-    {   printf(" id : %i ",sublist_number);
+    {
         printf("%s: ", clean_adj[sublist_number]);
         print_list((struct listNode *)temp->data);
         printf("\n");

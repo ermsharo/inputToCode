@@ -1,8 +1,8 @@
 9
 undershorts: pants; shoes;
 pants: belt; shoes;
-belt: jacket;
-shirt: belt; tie;
+belt:
+shirt:
 tie: jacket;
 jacket:
 socks: shoes;
